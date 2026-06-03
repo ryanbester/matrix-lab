@@ -58,3 +58,8 @@ input[type='number'] {
 .col-z {
     color: blue;
 }
+
+#rotation-tool {
+    width: 400px;
+    float: right;
+}

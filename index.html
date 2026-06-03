@@ -10,6 +10,8 @@
 <body>
 <h1>Matrix Lab</h1>
 
+<p>Inspired by the amazing site at <a href="https://www.algorithm-archive.org/contents/affine_transformations/affine_transformations.html">https://www.algorithm-archive.org/contents/affine_transformations/affine_transformations.html</a>.</p>
+
 <span class="mat-scale">Scale</span> <span class="mat-shear">Shear</span> Read as "x- [axis] towards -y [axis]". For
 example, in row-major, as here, find "x-" row then find "-y" column. That will move the x-axis towards the y-axis.
 <br/>
@@ -128,6 +130,32 @@ example, in row-major, as here, find "x-" row then find "-y" column. That will m
     Do not transpose. This tool uses row-major, three.js is column-major, this
     shows the effects if the matrix is in the wrong major. OpenGL is column-major, DirectX is row-major.
 </label>
+
+<div id="rotation-tool">
+    <h2>Rotation Tool</h2>
+    <fieldset>
+        <p>Rotation about:</p>
+        <em>The 'about axis' can be thought of the axis where the points stay constant.</em>
+        <br/>
+        <label class="col-x">
+            <input type="radio" name="rotation_axis" value="x" class="rotation-axis-radio" checked> X-axis
+        </label>
+        <br/>
+        <label class="col-y">
+            <input type="radio" name="rotation_axis" value="y" class="rotation-axis-radio"> Y-axis
+        </label>
+        <br/>
+        <label class="col-z">
+            <input type="radio" name="rotation_axis" value="z" class="rotation-axis-radio"> Z-axis
+        </label>
+    </fieldset>
+
+    <label for="rotation-angle">Angle (deg): </label>
+    <input type="number" name="rotation_angle" id="rotation-angle"/>
+
+    <p><span class="mat-translate">Translations</span> are \(\cos{\theta}\)</p>
+    <p><span class="mat-shear">Shears</span> are \(\sin{\theta}\) and \(-\sin{\theta}\)</p>
+</div>
 
 <script type="importmap">
     {

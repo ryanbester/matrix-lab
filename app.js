@@ -52,7 +52,7 @@ function handleModeSwitch(mode) {
 }
 
 const getWidth = () => {
-    return window.innerWidth - 300;
+    return window.innerWidth - 500;
 }
 
 const getHeight = () => {
@@ -234,6 +234,68 @@ function onInputChange() {
 document.querySelectorAll('input[type="number"]').forEach(el => {
     el.addEventListener('change', onInputChange);
 });
+
+document.querySelectorAll('.rotation-axis-radio').forEach(el => {
+    el.addEventListener('change', performRotation);
+})
+
+document.getElementById('rotation-angle').addEventListener('change', () => {
+    performRotation();
+});
+
+function performRotation() {
+    const checkedValue = document.querySelector('input[name="rotation_axis"]:checked').value;
+    const angle = parseFloat(document.getElementById('rotation-angle').value);
+    const angleRad = (angle * Math.PI) / 180;
+
+    if (selectedMode === "linear") {
+        // 3x3
+        // Set identity matrix
+        l11.value = l22.value = l33.value = 1;
+        l12.value = l13.value = 0;
+        l21.value = l23.value = 0;
+        l31.value = l32.value = 0;
+        if (checkedValue === 'x') {
+            l22.value = Math.cos(angleRad);
+            l23.value = Math.sin(angleRad);
+            l32.value = -Math.sin(angleRad);
+            l33.value = Math.cos(angleRad);
+        } else if (checkedValue === 'y') {
+            l11.value = Math.cos(angleRad);
+            l13.value = -Math.sin(angleRad);
+            l31.value = Math.sin(angleRad);
+            l33.value = Math.cos(angleRad);
+        } else {
+            l11.value = Math.cos(angleRad);
+            l12.value = Math.sin(angleRad);
+            l22.value = Math.cos(angleRad);
+            l21.value = -Math.sin(angleRad);
+        }
+    } else {
+        // 4x4
+        // Set identity matrix
+        a11.value = a22.value = a33.value = a44.value = 1;
+        a12.value = a13.value = a14.value = 0;
+        a21.value = a23.value = a24.value = 0;
+        a31.value = a32.value = a34.value = 0;
+        if (checkedValue === 'x') {
+            a22.value = Math.cos(angleRad);
+            a23.value = Math.sin(angleRad);
+            a32.value = -Math.sin(angleRad);
+            a33.value = Math.cos(angleRad);
+        } else if (checkedValue === 'y') {
+            a11.value = Math.cos(angleRad);
+            a13.value = -Math.sin(angleRad);
+            a31.value = Math.sin(angleRad);
+            a33.value = Math.cos(angleRad);
+        } else {
+            a11.value = Math.cos(angleRad);
+            a12.value = Math.sin(angleRad);
+            a22.value = Math.cos(angleRad);
+            a21.value = -Math.sin(angleRad);
+        }
+    }
+}
 
 function updateMath() {
     const linearMathOutput = document.getElementById('linear-math-output');
