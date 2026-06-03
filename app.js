@@ -74,20 +74,10 @@ scene.add(gridHelper);
 const axesHelper = new THREE.AxesHelper(10);
 scene.add(axesHelper);
 
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshStandardMaterial({color: 0x00ff00});
-const cube = new THREE.Mesh(geometry, material);
-cube.matrixAutoUpdate = false;
-scene.add(cube);
-
-const edgesGeometry = new THREE.EdgesGeometry(geometry);
-const edgeMaterial = new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 2});
-const lineSegments = new THREE.LineSegments(edgesGeometry, edgeMaterial);
-
-cube.add(lineSegments);
-
-const vertexMarkers = [];
+let currentObject = null;
+let vertexMarkers = [];
 let clickedMarker = null;
+let currentShape = document.querySelector('input[name="shape"]:checked').value;
 
 function createVertexMarkers(mesh) {
     const posAttr = mesh.geometry.attributes.position;
@@ -109,7 +99,101 @@ function createVertexMarkers(mesh) {
     }
 }
 
-createVertexMarkers(cube);
+function createCube() {
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshStandardMaterial({color: 0x00ff00});
+    const cube = new THREE.Mesh(geometry, material);
+    cube.matrixAutoUpdate = false;
+    scene.add(cube);
+
+    const edgesGeometry = new THREE.EdgesGeometry(geometry);
+    const edgeMaterial = new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 2});
+    const lineSegments = new THREE.LineSegments(edgesGeometry, edgeMaterial);
+    cube.add(lineSegments);
+
+    createVertexMarkers(cube);
+    return cube;
+}
+
+function createSphere() {
+    const geometry = new THREE.SphereGeometry(1, 32, 32);
+    const material = new THREE.MeshStandardMaterial({color: 0xff0000});
+    const sphere = new THREE.Mesh(geometry, material);
+    sphere.matrixAutoUpdate = false;
+    scene.add(sphere);
+
+    return sphere;
+}
+
+function createPyramid() {
+    const geometry = new THREE.TetrahedronGeometry(1);
+    const material = new THREE.MeshStandardMaterial({color: 0x00ff00});
+    const pyramid = new THREE.Mesh(geometry, material);
+
+    pyramid.matrixAutoUpdate = false;
+    scene.add(pyramid);
+
+    const edgesGeometry = new THREE.EdgesGeometry(geometry);
+    const edgeMaterial = new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 2});
+    const lineSegments = new THREE.LineSegments(edgesGeometry, edgeMaterial);
+    pyramid.add(lineSegments);
+
+    createVertexMarkers(pyramid);
+
+    return pyramid;
+}
+
+function createDodecahedron() {
+    const geometry = new THREE.DodecahedronGeometry(1, 0);
+
+    const material = new THREE.MeshStandardMaterial({color: 0xff0_ff});
+    const dodeca = new THREE.Mesh(geometry, material);
+
+    dodeca.matrixAutoUpdate = false;
+    scene.add(dodeca);
+
+    const edgesGeometry = new THREE.EdgesGeometry(geometry);
+    const edgeMaterial = new THREE.LineBasicMaterial({color: 0xff0000, linewidth: 2});
+    const lineSegments = new THREE.LineSegments(edgesGeometry, edgeMaterial);
+    dodeca.add(lineSegments);
+
+    createVertexMarkers(dodeca);
+
+    return dodeca;
+}
+
+
+function deleteObject(object) {
+    if (!object == null) {
+        return;
+    }
+
+    if (object.parent) {
+        object.parent.remove(object);
+    }
+
+    if (object.geometry) {
+        object.geometry.dispose();
+    }
+
+    if (object.material) {
+        if (Array.isArray(object.material)) {
+            object.material.forEach(material => material.dispose());
+        } else {
+            object.material.dispose();
+        }
+    }
+}
+
+function deleteCurrentObject() {
+    deleteObject(currentObject);
+    vertexMarkers.forEach(vertexMarker => {
+        deleteObject(vertexMarker);
+    });
+    vertexMarkers = [];
+}
+
+currentObject = createCube();
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -162,8 +246,8 @@ function animate() {
             0, 0, 0, 1
         );
 
-        cube.applyMatrix4(M4);
-        cube.matrix.copy(M4);
+        currentObject.applyMatrix4(M4);
+        currentObject.matrix.copy(M4);
     } else {
         const M4 = new THREE.Matrix4();
         M4.set(
@@ -175,11 +259,11 @@ function animate() {
 
         const Mt = doNotTranspose.checked ? M4 : M4.transpose();
 
-        cube.applyMatrix4(Mt);
-        cube.matrix.copy(Mt);
+        currentObject.applyMatrix4(Mt);
+        currentObject.matrix.copy(Mt);
     }
 
-    const posAttr = cube.geometry.attributes.position;
+    const posAttr = currentObject.geometry.attributes.position;
 
     for (let i = 0; i < vertexMarkers.length; i++) {
         const localPoint = new THREE.Vector3(
@@ -188,7 +272,7 @@ function animate() {
             posAttr.getZ(i)
         );
 
-        const worldPoint = localPoint.applyMatrix4(cube.matrix);
+        const worldPoint = localPoint.applyMatrix4(currentObject.matrix);
 
         vertexMarkers[i].position.copy(worldPoint);
     }
@@ -295,6 +379,31 @@ function performRotation() {
             a21.value = -Math.sin(angleRad);
         }
     }
+}
+
+document.querySelectorAll('.shape-radio').forEach(el => {
+    el.addEventListener('change', () => {
+        const newShape = document.querySelector('input[name="shape"]:checked').value;
+        if (newShape !== currentShape) {
+            changeShape(newShape);
+        }
+    })
+})
+
+function changeShape(newShape) {
+    deleteCurrentObject();
+
+    if (newShape === 'cube') {
+        currentObject = createCube();
+    } else if (newShape === 'sphere') {
+        currentObject = createSphere();
+    } else if (newShape === 'pyramid') {
+        currentObject = createPyramid();
+    } else if (newShape === 'dodecahedron') {
+        currentObject = createDodecahedron();
+    }
+
+    currentShape = newShape;
 }
 
 function updateMath() {
