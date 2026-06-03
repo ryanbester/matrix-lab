@@ -1,0 +1,60 @@
+#linear-matrix, #affine-matrix {
+    display: flex;
+    align-items: center;
+}
+
+#linear-matrix table, #affine-matrix table {
+    margin: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+input[type='number'] {
+    background-color: transparent;
+}
+
+.mat-scale {
+    background-color: green;
+}
+
+.mat-scale input[type='number'] {
+    color: white;
+}
+
+.mat-shear {
+    background-color: red;
+}
+
+.mat-shear input[type='number'] {
+    color: white;
+}
+
+.mat-translate {
+    background-color: blue;
+}
+
+.mat-translate input[type='number'] {
+    color: white;
+}
+
+.mat-projection {
+    background-color: mediumpurple;
+}
+
+.mat-homogenous {
+    background-color: orange;
+}
+
+.col-x {
+    color: red;
+}
+
+.col-y {
+    color: green;
+}
+
+.col-z {
+    color: blue;
+}

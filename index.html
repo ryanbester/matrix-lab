@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <title>Matrix Lab</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body>
+<h1>Matrix Lab</h1>
+
+<span class="mat-scale">Scale</span> <span class="mat-shear">Shear</span> Read as "x- [axis] towards -y [axis]". For
+example, in row-major, as here, find "x-" row then find "-y" column. That will move the x-axis towards the y-axis.
+<br/>
+<span class="mat-translate">Translate</span>
+<span class="mat-projection">Projection</span>
+<span class="mat-homogenous">Homogenous</span>
+
+<p>For projections, the axis of the row are the lines that warp. For example, with projection of the "x-" row, the lines
+    on the x-axis will no longer be parallel. Translation is indicated by the axis of the column.</p>
+
+<div>
+    <label>
+        <input type="radio" name="matrix_mode" value="linear" class="matrix-mode-radio" checked> 3x3
+    </label>
+    <label>
+        <input type="radio" name="matrix_mode" value="affine" class="matrix-mode-radio"> 4x4
+    </label>
+</div>
+
+<div id="linear-matrix">
+    <div>
+        \[ \begin{bmatrix} v_x & v_y & v_z \end{bmatrix} \times \]
+    </div>
+
+    <table>
+        <tr>
+            <td></td>
+            <td class="col-x">-x</td>
+            <td class="col-y">-y</td>
+            <td class="col-z">-z</td>
+        </tr>
+        <tr>
+            <td class="col-x">x-</td>
+            <td class="mat-scale"><input type="number" id="l11" value="1" step="0.1"></td>
+            <td class="mat-shear"><input type="number" id="l12" value="0" step="0.1"></td>
+            <td class="mat-shear"><input type="number" id="l13" value="0" step="0.1"></td>
+        </tr>
+        <tr>
+            <td class="col-y">y-</td>
+            <td class="mat-shear"><input type="number" id="l21" value="0" step="0.1"></td>
+            <td class="mat-scale"><input type="number" id="l22" value="1" step="0.1"></td>
+            <td class="mat-shear"><input type="number" id="l23" value="0" step="0.1"></td>
+        </tr>
+        <tr>
+            <td class="col-z">z-</td>
+            <td class="mat-shear"><input type="number" id="l31" value="0" step="0.1"></td>
+            <td class="mat-shear"><input type="number" id="l32" value="0" step="0.1"></td>
+            <td class="mat-scale"><input type="number" id="l33" value="1" step="0.1"></td>
+        </tr>
+    </table>
+
+    <div id="linear-math-output">
+        \[ \text{Equation will display here} \]
+    </div>
+</div>
+
+<div id="affine-matrix" class="hidden">
+
+    <div>
+        \[ \begin{bmatrix} v_x & v_y & v_z & 1 \end{bmatrix} \]
+    </div>
+    <table>
+        <tr>
+            <td></td>
+            <td class="col-x">-x</td>
+            <td class="col-y">-y</td>
+            <td class="col-z">-z</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="col-x">x-</td>
+            <td class="mat-scale"><input type="number" id="a11" value="1" step="0.1"></td>
+            <td class="mat-shear"><input type="number" id="a12" value="0" step="0.1"></td>
+            <td class="mat-shear"><input type="number" id="a13" value="0" step="0.1"></td>
+            <td class="mat-projection"><input type="number" id="a14" value="0" step="0.1"></td>
+        </tr>
+        <tr>
+            <td class="col-y">y-</td>
+            <td class="mat-shear"><input type="number" id="a21" value="0" step="0.1"></td>
+            <td class="mat-scale"><input type="number" id="a22" value="1" step="0.1"></td>
+            <td class="mat-shear"><input type="number" id="a23" value="0" step="0.1"></td>
+            <td class="mat-projection"><input type="number" id="a24" value="0" step="0.1"></td>
+        </tr>
+        <tr>
+            <td class="col-z">z-</td>
+            <td class="mat-shear"><input type="number" id="a31" value="0" step="0.1"></td>
+            <td class="mat-shear"><input type="number" id="a32" value="0" step="0.1"></td>
+            <td class="mat-scale"><input type="number" id="a33" value="1" step="0.1"></td>
+            <td class="mat-projection"><input type="number" id="a34" value="0" step="0.1"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td class="mat-translate"><input type="number" id="a41" value="0" step="0.1"></td>
+            <td class="mat-translate"><input type="number" id="a42" value="0" step="0.1"></td>
+            <td class="mat-translate"><input type="number" id="a43" value="0" step="0.1"></td>
+            <td class="mat-homogenous"><input type="number" id="a44" value="1" step="0.1"></td>
+        </tr>
+    </table>
+
+    <div id="affine-math-output">
+        \[ \text{Equation will display here} \]
+    </div>
+
+    <div id="affine-math-output-homogeneous">
+
+    </div>
+</div>
+
+<hr>
+
+<button id="btn2d">Switch to 2D Mode</button>
+<button id="btn3d">Switch to 3D Mode</button>
+
+<label>
+    <input type="checkbox" id="no-transpose"/>
+    Do not transpose. This tool uses row-major, three.js is column-major, this
+    shows the effects if the matrix is in the wrong major. OpenGL is column-major, DirectX is row-major.
+</label>
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+</script>
+<script type="module" src="/app.js"></script>
+</body>
+</html>
