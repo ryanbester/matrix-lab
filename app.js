@@ -28,6 +28,10 @@ const a42 = document.getElementById('a42');
 const a43 = document.getElementById('a43');
 const a44 = document.getElementById('a44');
 
+const rotAxisX = document.getElementById('rot-axis-x');
+const rotAxisY = document.getElementById('rot-axis-y');
+const rotAxisZ = document.getElementById('rot-axis-z');
+
 const doNotTranspose = document.getElementById("no-transpose");
 
 let selectedMode = "linear";
@@ -78,6 +82,8 @@ let currentObject = null;
 let vertexMarkers = [];
 let clickedMarker = null;
 let currentShape = document.querySelector('input[name="shape"]:checked').value;
+
+let rotArbAxis = null;
 
 function createVertexMarkers(mesh) {
     const posAttr = mesh.geometry.attributes.position;
@@ -321,7 +327,17 @@ document.querySelectorAll('input[type="number"]').forEach(el => {
 
 document.querySelectorAll('.rotation-axis-radio').forEach(el => {
     el.addEventListener('change', performRotation);
-})
+});
+
+document.querySelectorAll('.rot-axis-input').forEach(el => {
+    el.addEventListener('change', () => {
+        const checkedValue = document.querySelector('input[name="rotation_axis"]:checked').value;
+        if (checkedValue === 'arb') {
+            hideRotationArbAxis();
+            showRotationArbAxis();
+        }
+    });
+});
 
 document.getElementById('rotation-angle').addEventListener('change', () => {
     performRotation();
@@ -340,20 +356,40 @@ function performRotation() {
         l21.value = l23.value = 0;
         l31.value = l32.value = 0;
         if (checkedValue === 'x') {
+            hideRotationArbAxis();
             l22.value = Math.cos(angleRad);
             l23.value = Math.sin(angleRad);
             l32.value = -Math.sin(angleRad);
             l33.value = Math.cos(angleRad);
         } else if (checkedValue === 'y') {
+            hideRotationArbAxis();
             l11.value = Math.cos(angleRad);
             l13.value = -Math.sin(angleRad);
             l31.value = Math.sin(angleRad);
             l33.value = Math.cos(angleRad);
-        } else {
+        } else if (checkedValue === 'z') {
+            hideRotationArbAxis();
             l11.value = Math.cos(angleRad);
             l12.value = Math.sin(angleRad);
             l22.value = Math.cos(angleRad);
             l21.value = -Math.sin(angleRad);
+        } else {
+            // Arbitrary axis
+            showRotationArbAxis();
+
+            const c = Math.cos(angleRad);
+            const s = Math.sin(angleRad);
+
+            const n = new THREE.Vector3(parseFloat(rotAxisX.value), parseFloat(rotAxisY.value), parseFloat(rotAxisZ.value)).normalize();
+            l11.value = (n.x * n.x) * (1 - c) + c;
+            l12.value = n.x * n.y * (1 - c) + n.z * s;
+            l13.value = n.x * n.z * (1 - c) - n.y * s;
+            l21.value = n.x * n.y * (1 - c) - n.z * s;
+            l22.value = (n.y * n.y) * (1 - c) + c;
+            l23.value = n.y * n.z * (1 - c) + n.x * s;
+            l31.value = n.x * n.z * (1 - c) + n.y * s;
+            l32.value = n.y * n.z * (1 - c) - n.x * s;
+            l33.value = (n.z * n.z) * (1 - c) + c;
         }
     } else {
         // 4x4
@@ -363,22 +399,59 @@ function performRotation() {
         a21.value = a23.value = a24.value = 0;
         a31.value = a32.value = a34.value = 0;
         if (checkedValue === 'x') {
+            hideRotationArbAxis();
             a22.value = Math.cos(angleRad);
             a23.value = Math.sin(angleRad);
             a32.value = -Math.sin(angleRad);
             a33.value = Math.cos(angleRad);
         } else if (checkedValue === 'y') {
+            hideRotationArbAxis();
             a11.value = Math.cos(angleRad);
             a13.value = -Math.sin(angleRad);
             a31.value = Math.sin(angleRad);
             a33.value = Math.cos(angleRad);
-        } else {
+        } else if (checkedValue === 'z') {
+            hideRotationArbAxis();
             a11.value = Math.cos(angleRad);
             a12.value = Math.sin(angleRad);
             a22.value = Math.cos(angleRad);
             a21.value = -Math.sin(angleRad);
+        } else {
+            // Arbitrary axis
+            showRotationArbAxis();
+
+            const c = Math.cos(angleRad);
+            const s = Math.sin(angleRad);
+
+            const n = new THREE.Vector3(parseFloat(rotAxisX.value), parseFloat(rotAxisY.value), parseFloat(rotAxisZ.value)).normalize();
+            a11.value = (n.x * n.x) * (1 - c) + c;
+            a12.value = n.x * n.y * (1 - c) + n.z * s;
+            a13.value = n.x * n.z * (1 - c) - n.y * s;
+            a21.value = n.x * n.y * (1 - c) - n.z * s;
+            a22.value = (n.y * n.y) * (1 - c) + c;
+            a23.value = n.y * n.z * (1 - c) + n.x * s;
+            a31.value = n.x * n.z * (1 - c) + n.y * s;
+            a32.value = n.y * n.z * (1 - c) - n.x * s;
+            a33.value = (n.z * n.z) * (1 - c) + c;
         }
     }
+}
+
+function showRotationArbAxis() {
+    if (rotArbAxis != null) return;
+
+    const dir = new THREE.Vector3(parseFloat(rotAxisX.value), parseFloat(rotAxisY.value), parseFloat(rotAxisZ.value));
+    const origin = new THREE.Vector3(0, 0, 0);
+
+    rotArbAxis = new THREE.ArrowHelper(dir.normalize(), origin, 10, 0xff0000);
+    scene.add(rotArbAxis);
+}
+
+function hideRotationArbAxis() {
+    if (rotArbAxis == null) return;
+
+    deleteObject(rotArbAxis);
+    rotArbAxis = null;
 }
 
 document.querySelectorAll('.shape-radio').forEach(el => {

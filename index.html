@@ -10,7 +10,9 @@
 <body>
 <h1>Matrix Lab</h1>
 
-<p>Inspired by the amazing site at <a href="https://www.algorithm-archive.org/contents/affine_transformations/affine_transformations.html">https://www.algorithm-archive.org/contents/affine_transformations/affine_transformations.html</a>.</p>
+<p>Inspired by the amazing site at <a
+        href="https://www.algorithm-archive.org/contents/affine_transformations/affine_transformations.html">https://www.algorithm-archive.org/contents/affine_transformations/affine_transformations.html</a>.
+</p>
 
 <span class="mat-scale">Scale</span> <span class="mat-shear">Shear</span> Read as "x- [axis] towards -y [axis]". For
 example, in row-major, as here, find "x-" row then find "-y" column. That will move the x-axis towards the y-axis.
@@ -163,6 +165,17 @@ example, in row-major, as here, find "x-" row then find "-y" column. That will m
         <label class="col-z">
             <input type="radio" name="rotation_axis" value="z" class="rotation-axis-radio"> Z-axis
         </label>
+        <br/>
+        <label>
+            <input type="radio" name="rotation_axis" value="arb" class="rotation-axis-radio"> Arbitrary:
+        </label>
+        <table>
+            <tr>
+                <td><input type="number" class="rot-axis-input" style="width: 50px;" id="rot-axis-x" value="0" step="1"></td>
+                <td><input type="number" class="rot-axis-input" style="width: 50px;" id="rot-axis-y" value="0" step="1"></td>
+                <td><input type="number" class="rot-axis-input" style="width: 50px;" id="rot-axis-z" value="0" step="1"></td>
+            </tr>
+        </table>
     </fieldset>
 
     <label for="rotation-angle">Angle (deg): </label>
